@@ -2,11 +2,14 @@ import {useState, useEffect} from "react";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
-const GETTABLE = 'GET-TABLE'
-const GETSCORETABLE = 'GET-SCORETABLE'
-const GETLEGUETITLE='GET-LEAGUE-TITLE'
+const GETTABLE = 'GET-TABLE';
+const GETSCORETABLE = 'GET-SCORETABLE';
+const GETLEGUETITLE='GET-LEAGUE-TITLE';
+const LEAGYE_ID='1056720';
 const useFetch = (type) => {
     const [data, setData] = useState([]);
+    const [tiData, setTiData] = useState([]);
+    const [scData, setScData] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const fetchData = async (type) => {
@@ -27,7 +30,7 @@ const useFetch = (type) => {
                         goalsDiff: 0,
                         points: 0
                     }
-                    const response = await axios.get('http://www.goalstream.org/widget?new_template=1&mod=gchampionship&name=standings&subject=gchampionship_season_1056720');
+                    const response = await axios.get(`http://www.goalstream.org/widget?new_template=1&mod=gchampionship&name=standings&subject=gchampionship_season_${LEAGYE_ID}`);
                     const $ = cheerio.load(response.data);
                     let arr = $('td')
                         .map(function (i, el) {
@@ -63,13 +66,13 @@ const useFetch = (type) => {
                     }
 
                     setData(tableData);
+                    setIsLoading(false);
                 } catch (error) {
                     setError(error);
                     console.log(error)
                 } finally {
                     setIsLoading(false);
                 }
-                return {}
                 break;
             }
             case GETSCORETABLE: {
@@ -87,7 +90,7 @@ const useFetch = (type) => {
                         ga: 0,
                     }
 
-                    const response = await axios.get('http://www.goalstream.org/widget?mod=gchampionship&name=goalscorers&subject=gchampionship_season_1056720');
+                    const response = await axios.get(`http://www.goalstream.org/widget?mod=gchampionship&name=goalscorers&subject=gchampionship_season_${LEAGYE_ID}`);
                     const $ = cheerio.load(response.data);
                     let arr = $('td')
                         .map(function (i, el) {
@@ -118,25 +121,41 @@ const useFetch = (type) => {
                         newItem.logo = images[i][0].attribs.src;
                         scoreTableData.push(newItem);
                     }
-                    setData(scoreTableData)
+                    setScData(scoreTableData)
+
+                    setIsLoading(false);
                 } catch (error) {
                     setError(error);
                     console.log(error)
                 } finally {
                     setIsLoading(false);
                 }
+                break;
             }
             case GETLEGUETITLE:{
-                let titleData={
-                    title:'',
-                    img:''
-                };
-                const titleResponse= await axios.get('http://www.goalstream.org/season/1056720/0643f0e7#/standings');
-                const title=cheerio.load(titleResponse.data);
-                let str=title('.b-gs-main-header__subj-title-full')[0].children[0].data
-                let image=title('.b-gs-main-header__subj-logo logo-avatar')
-                console.log(image)
-
+                let titleDataArr=[];
+                try{
+                    setIsLoading(true);
+                    let titleData={
+                        title:'',
+                        img:''
+                    };
+                    // 1056720
+                    const titleResponse= await axios.get(`http://www.goalstream.org/season/1056720/0643f0e7#/standings`);
+                    const title=cheerio.load(titleResponse.data);
+                    titleData.title=title('.b-gs-main-header__subj-title-full')[0].children[0].data;
+                    titleData.img=title('.logo-avatar')[0].children[1].children[1].children[1].attribs.src;
+                    titleDataArr.push(titleData);
+                    // console.log(titleDataArr);
+                    setTiData(titleDataArr);
+                    setIsLoading(false);
+                }catch (e) {
+                    console.log(e);
+                    setError(e)
+                }finally {
+                    setIsLoading(false)
+                }
+                break;
             }
         }
     }
@@ -146,10 +165,10 @@ const useFetch = (type) => {
 
     const refetch = () => {
         setIsLoading(true);
-        fetchData();
+        // fetchData();
     };
 
-    return {data, isLoading, error, refetch};
+    return {data, scData, tiData, isLoading, error, refetch};
 }
 
 export default useFetch;

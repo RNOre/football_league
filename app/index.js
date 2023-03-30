@@ -1,85 +1,105 @@
-import {FlatList, StyleSheet, Text, View, Image} from "react-native";
+import {FlatList, StyleSheet, Text, View, Image, ActivityIndicator} from "react-native";
 import useFetch from "./Parser/parser";
+import axios from "axios";
+import * as cheerio from "cheerio";
+import {useEffect, useState} from "react";
+import {Redirect} from "expo-router";
 
 export default function Page() {
-    var {data} = useFetch('GET-TABLE');
+
+
+    const {tiData} = useFetch('GET-LEAGUE-TITLE');
+    const titleData = tiData[0];
+
+    const {scData, isLoading,error} = useFetch('GET-SCORETABLE');
+    const scoreTable = scData;
+    // console.log(scoreTable)
+
+    const {data} = useFetch('GET-TABLE');
     const teamTable = data;
 
-    var {data} = useFetch('GET-SCORETABLE');
-    const scoreTable = data;
 
+
+    console.log(teamTable);
+    // console.log(titleData);
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerTitle}>
-                    <Text style={styles.headerTitleText}>А-Лига 5x5. Высшая Лига</Text>
-                </View>
-                <View style={styles.headerLogoWrapper}>
-                    <Image style={styles.headerLogo}
-                           source={{
-                               uri: "http://img.goalstream.org/img_r_186x186/public/gchampionship_season/ae/64/0b/b4e55_b796.png?c=fb58"
-                           }}/>
-                </View>
-            </View>
-
-            <View style={styles.tableTab}>
-                <View style={styles.tableTab__itemWrapper}>
-                    <Text style={styles.tableTab__item}>итого</Text>
-                </View>
-                <View style={styles.tableTab__itemWrapper}>
-                    <Text style={styles.tableTab__item}>бомбардиры</Text>
-                </View>
-            </View>
-
-            <View style={styles.tableScore__Title}>
-                <Text style={styles.tableScore__position}>#</Text>
-                <Text style={styles.tableScore__playerH}>игрок</Text>
-                <Text style={styles.tableScore__gaols}>г</Text>
-                <Text style={styles.tableScore__assists}>а</Text>
-                <Text style={styles.tableScore__ga}>г+а</Text>
-            </View>
-            <FlatList style={{height: '100%'}} data={scoreTable} renderItem={({item}) =>
-                <View style={styles.tableScore__Item}>
-                    <Text style={styles.tableScore__position}>{item.position}</Text>
-                    <View style={styles.tableScore__player}>
-                        <Text style={styles.tableScore__playerName}>{item.name}</Text>
-                        <View style={styles.tableScore__playerTeam}>
-                            <View style={styles.tableScore__teamLogoWrapper}>
-                                <Image style={styles.tableScore__teamLogo}
-                                       source={{
-                                           uri: item.logo
-                                       }}/>
-                            </View>
-                            <Text style={styles.tableScore__playerTeamTitle}>{item.team}</Text>
-                        </View>
-                    </View>
-                    <Text style={styles.tableScore__gaols}>{item.goals}</Text>
-                    <Text style={styles.tableScore__assists}>{item.assist}</Text>
-                    <Text style={styles.tableScore__ga}>{item.ga}</Text>
-                </View>}/>
-
-            <View style={styles.tableTitle}>
-                <Text style={styles.table__position}>#</Text>
-                <Text style={styles.table__teamH}>команда</Text>
-                <Text style={styles.table__played}>и</Text>
-                <Text style={styles.table__goals}>г</Text>
-                <Text style={styles.table__points}>о</Text>
-            </View>
-            <FlatList style={{height: '100%'}} data={teamTable} renderItem={({item}) =>
-                <View style={styles.tableItem}>
-                    <Text style={styles.table__position}>{item.position}</Text>
-                    <View style={styles.table__team}>
-                        <Image style={styles.table__teamLogo}
-                               source={{
-                                   uri: item.logo
-                               }}/>
-                    </View>
-                    <Text style={styles.table__teamText}>{item.team}</Text>
-                    <Text style={styles.table__played}>{item.played}</Text>
-                    <Text style={styles.table__goals}>{item.goals}</Text>
-                    <Text style={styles.table__points}>{item.points}</Text>
-                </View>}/>
-        </View>
+        <Redirect href={'/home'} />
+        // <View style={styles.container}>
+        //     {isLoading?(<ActivityIndicator/>):error?(<Text> Something went wrong</Text>):(
+        //         <View style={styles.header}>
+        //             <View style={styles.headerTitle}>
+        //                 {/*<Text style={styles.headerTitleText}>{tiData[0].title}</Text>*/}
+        //             </View>
+        //             <View style={styles.headerLogoWrapper}>
+        //                 {/*<Image style={styles.headerLogo}*/}
+        //                 {/*       source={{*/}
+        //                 {/*           uri: tiData[0].img*/}
+        //                 {/*       }}/>*/}
+        //             </View>
+        //         </View>
+        //     )}
+        //
+        //
+        //     <View style={styles.tableTab}>
+        //         <View style={styles.tableTab__itemWrapper}>
+        //             <Text style={styles.tableTab__item}>итого</Text>
+        //         </View>
+        //         <View style={styles.tableTab__itemWrapper}>
+        //             <Text style={styles.tableTab__item}>бомбардиры</Text>
+        //         </View>
+        //     </View>
+        //
+        //     <View style={styles.tableScore__Title}>
+        //         <Text style={styles.tableScore__position}>#</Text>
+        //         <Text style={styles.tableScore__playerH}>игрок</Text>
+        //         <Text style={styles.tableScore__gaols}>г</Text>
+        //         <Text style={styles.tableScore__assists}>а</Text>
+        //         <Text style={styles.tableScore__ga}>г+а</Text>
+        //     </View>
+        //     {isLoading?(<ActivityIndicator/>):error?(<Text> Something went wrong</Text>):(
+        //     <FlatList style={{height: '100%'}} data={scoreTable} renderItem={({item}) =>
+        //         <View style={styles.tableScore__Item}>
+        //             <Text style={styles.tableScore__position}>{item.position}</Text>
+        //             <View style={styles.tableScore__player}>
+        //                 <Text style={styles.tableScore__playerName}>{item.name}</Text>
+        //                 <View style={styles.tableScore__playerTeam}>
+        //                     <View style={styles.tableScore__teamLogoWrapper}>
+        //                         <Image style={styles.tableScore__teamLogo}
+        //                                source={{
+        //                                    uri: item.logo
+        //                                }}/>
+        //
+        //                     </View>
+        //                     <Text style={styles.tableScore__playerTeamTitle}>{item.team}</Text>
+        //                 </View>
+        //             </View>
+        //             <Text style={styles.tableScore__gaols}>{item.goals}</Text>
+        //             <Text style={styles.tableScore__assists}>{item.assist}</Text>
+        //             <Text style={styles.tableScore__ga}>{item.ga}</Text>
+        //         </View>}/>)
+        //     }
+        //     <View style={styles.tableTitle}>
+        //         <Text style={styles.table__position}>#</Text>
+        //         <Text style={styles.table__teamH}>команда</Text>
+        //         <Text style={styles.table__played}>и</Text>
+        //         <Text style={styles.table__goals}>г</Text>
+        //         <Text style={styles.table__points}>о</Text>
+        //     </View>
+        //     <FlatList style={{height: '100%'}} data={teamTable} renderItem={({item}) =>
+        //         <View style={styles.tableItem}>
+        //             <Text style={styles.table__position}>{item.position}</Text>
+        //             <View style={styles.table__team}>
+        //                 <Image style={styles.table__teamLogo}
+        //                        source={{
+        //                            uri: item.logo
+        //                        }}/>
+        //             </View>
+        //             <Text style={styles.table__teamText}>{item.team}</Text>
+        //             <Text style={styles.table__played}>{item.played}</Text>
+        //             <Text style={styles.table__goals}>{item.goals}</Text>
+        //             <Text style={styles.table__points}>{item.points}</Text>
+        //         </View>}/>
+        // </View>
     );
 }
 
