@@ -1,4 +1,6 @@
-import {View, Text, Image, StyleSheet} from "react-native";
+import {View, Text, Image, StyleSheet, Button} from "react-native";
+import {DrawerActions as navigation} from "@react-navigation/routers/src";
+import {nav} from "../index";
 
 const primary='#eeeeee'
 const secondary='#ffffff'

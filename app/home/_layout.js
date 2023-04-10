@@ -3,13 +3,14 @@ import {Ionicons} from '@expo/vector-icons';
 import {MaterialCommunityIcons} from '@expo/vector-icons';
 import {AntDesign} from '@expo/vector-icons'
 import {FontAwesome5} from '@expo/vector-icons';
-import {View} from "react-native";
+import {StatusBar, View} from "react-native";
 import Header from "../components/Header";
 
 
 export default () => {
     return (
-        <Tabs screenOptions={{header:() =><Header/>,
+        <Tabs screenOptions={{
+            header:() =><Header/>,
             tabBarActiveTintColor: '#E9334C'}}>
             <Tabs.Screen name={'table'} options={{
                 title: 'Таблица',

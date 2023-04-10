@@ -1,11 +1,30 @@
-import {FlatList, Image, StyleSheet, Text, View} from "react-native";
+import {
+    FlatList,
+    Image,
+    StyleSheet,
+    Text,
+    View,
+    ActivityIndicator,
+    TouchableOpacity,
+    Button,
+    SafeAreaView,
+    StatusBar
+} from "react-native";
 import useFetch from "../Parser/parser";
+import {Link} from "expo-router";
+import axios from "axios";
+import * as cheerio from "cheerio";
 
-const table = () => {
-    const {data} = useFetch('GET-TABLE');
-    const teamTable = data;
+const table = (props) => {
+    const {data, error, isLoading} = useFetch('GET-TABLE');
+
+
     return (
         <View>
+            <SafeAreaView>
+                <StatusBar
+                barSyle='dark'/>
+            </SafeAreaView>
             <View style={styles.tableTitle}>
                 <Text style={styles.table__position}>#</Text>
                 <Text style={styles.table__teamH}>команда</Text>
@@ -13,91 +32,46 @@ const table = () => {
                 <Text style={styles.table__goals}>г</Text>
                 <Text style={styles.table__points}>о</Text>
             </View>
-            <FlatList style={{height: '100%'}} data={teamTable} renderItem={({item}) =>
-                <View style={styles.tableItem}>
-                    <Text style={styles.table__position}>{item.position}</Text>
-                    <View style={styles.table__team}>
-                        <Image style={styles.table__teamLogo}
-                               source={{
-                                   uri: item.logo
-                               }}/>
-                    </View>
-                    <Text style={styles.table__teamText}>{item.team}</Text>
-                    <Text style={styles.table__played}>{item.played}</Text>
-                    <Text style={styles.table__goals}>{item.goals}</Text>
-                    <Text style={styles.table__points}>{item.points}</Text>
-                </View>}/>
+            {isLoading ? (<ActivityIndicator/>) : error ? (<Text> Something went wrong</Text>) : (
+                <FlatList style={{height: '100%'}} data={data} renderItem={({item}) =>
+                    <Link href={{
+                        pathname: `../components/team/${item.team}`,
+                        params: {
+                            url: item.link,
+                            team: item.team,
+                            position: item.position
+                        }
+                    }} style={styles.tableItem} asChild>
+                        <TouchableOpacity>
+                            {/*<View style={{width:'100%'}}>*/}
+                            <Text style={styles.table__position}>{item.position}</Text>
+                            <View style={styles.table__team}>
+                                <Image style={styles.table__teamLogo}
+                                       source={{
+                                           uri: item.logo
+                                       }}/>
+                            </View>
+                            <Text style={styles.table__teamText}>{item.team}</Text>
+                            <Text style={styles.table__played}>{item.played}</Text>
+                            <Text style={styles.table__goals}>{item.goals}</Text>
+                            <Text style={styles.table__points}>{item.points}</Text>
+                        </TouchableOpacity>
+                    </Link>
+                }/>
+            )}
+
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#FFFFFF',
-        height: '100%',
-    },
-    header: {
-        height: 150,
-        width: '100%',
-        backgroundColor: '#EEEEEE',
-    },
-    headerLogoWrapper: {
-        flex: 1,
-        marginRight: 20,
-    },
-    headerLogo: {
-        flex: 1,
-        maxWidth: 100,
-        resizeMode: "contain",
-    },
-    headerTitle: {
-        height: 85,
-        backgroundColor: '#081d27',
-        width: "100%",
-        textAlign: "left",
-        justifyContent: 'flex-end',
-        paddingBottom: 15
-    },
-    headerTitleText: {
-        color: "#ffffff",
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 18,
-    },
-    table: {
-        paddingHorizontal: 10
-    },
-    tableTab: {
-        flexDirection: 'row',
-        height: 50,
-        alignItems: 'center',
-        paddingLeft: 10
-    },
-    tableTab__item: {
-        // height: 30,
-
-        paddingVertical: 6,
-        paddingHorizontal: 10,
-        // borderRadius: 5,
-        fontSize: 14,
-        textTransform: 'uppercase',
-        color: '#EEEEEE',
-        textAlign: 'center',
-        // backgroundColor: '#E9334C'
-    },
-    tableTab__itemWrapper: {
-        borderRadius: 5,
-        backgroundColor: '#E9334C',
-        height: 30,
-        textAlign: 'center',
-        marginRight: 10,
-    },
     tableTitle: {
         flexDirection: 'row',
         backgroundColor: '#EEEEEE',
         paddingLeft: 10,
     },
     tableItem: {
+        flex: 1,
         alignItems: 'center',
         height: 70,
         flexDirection: 'row',
@@ -142,74 +116,5 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'center',
     },
-    title: {
-        fontSize: 64,
-        fontWeight: "bold",
-    },
-    subtitle: {
-        fontSize: 36,
-        color: "#38434D",
-    },
-
-    tableScore__Title: {
-        flexDirection: 'row',
-        backgroundColor: '#EEEEEE',
-        paddingLeft: 10,
-    },
-    tableScore__position: {
-        flex: 1,
-        textAlign: 'center',
-    },
-    tableScore__playerH: {
-        flex: 4,
-        textAlign: 'center',
-    },
-    tableScore__gaols: {
-        flex: 1,
-        textAlign: 'center',
-    },
-    tableScore__assists: {
-        flex: 1,
-        textAlign: 'center',
-    },
-    tableScore__ga: {
-        flex: 1,
-        textAlign: 'center',
-    },
-    tableScore__Item: {
-        alignItems: 'center',
-        height: 70,
-        flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        paddingLeft: 10,
-        paddingVertical: 10,
-        borderBottomWidth: 2,
-        borderColor: '#EEEEEE'
-    },
-    tableScore__player: {
-        flex: 4,
-        textAlign: 'center',
-    },
-    tableScore__playerTeam: {
-
-        flexDirection: 'row'
-    },
-    tableScore__playerName: {
-        fontWeight: "bold",
-    },
-    tableScore__teamLogoWrapper: {
-        flex: 1
-    },
-    tableScore__teamLogo: {
-        flex: 1,
-        maxHeight: 30,
-        resizeMode: "contain",
-        marginRight: 10
-    },
-    tableScore__playerTeamTitle: {
-        color: "#757b7d",
-        flex: 5
-    }
-
 })
 export default table;

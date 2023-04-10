@@ -3,34 +3,41 @@ import useFetch from "../Parser/parser";
 import {Link} from "expo-router";
 import React, {useState} from "react";
 
-const results = () => {
+const players = () => {
 
+    const position = [
+        {pos: 'нападающие'},
+        {pos: 'защитники'},
+        {pos: 'вратари'},
+        {pos: 'все игроки'}];
     // const [data, setData]=useState([]);
     // setObj(()=>useFetch('GET-PLAYERS'));
     // console.log(obj);
 
     const {obj} = useFetch('GET-PLAYERS')
     // setData(obj);
-    const playerFilter=(position)=>{
+    const playerFilter = (position) => {
         alert('position');
     }
     return (
         <View>
+            <View style={styles.typeOfPositionWrapper}>
+                <Text style={styles.typeOfPosition}>
+                    Выбрать позицию
+                </Text>
+            </View>
+            <FlatList style={styles.positionItemList} horizontal={true} data={position}
+                      renderItem={({item}) =>
+                          <View style={styles.positionItem}>
+                              <Text style={styles.positionItemText}>{item.pos}</Text>
+                          </View>
+                      }/>
             <View style={styles.header}>
                 <Text style={[styles.header__number, styles.item]}>№</Text>
                 <Text style={[styles.header__player, styles.item]}>игрок</Text>
                 <Text style={[styles.header__team, styles.item]}>команда</Text>
             </View>
-            <View>
-                <Text onPress={()=>
-                {
-                    // let arr=[];
-                    // arr=obj.filter(i=>i.info.contain('нападающий'));
-                    // setData(arr);
-                }}>
-                    нападающие
-                </Text>
-            </View>
+
             <FlatList style={{height: '100%'}} data={obj} renderItem={({item}) =>
                 <Link href={{
                     // pathname: `../components/team/${item.team}`,
@@ -70,6 +77,20 @@ const styles = StyleSheet.create({
     item: {
         textAlign: 'center'
     },
+    positionItemList: {
+        height: '5%',
+    },
+    positionItem: {
+        alignSelf: 'center',
+        marginRight: 10,
+        borderRadius: 20
+    },
+    positionItemText: {
+        paddingHorizontal: 10,
+        paddingVertical: 20,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20
+    },
     header__number: {
         flex: 1
     },
@@ -92,7 +113,7 @@ const styles = StyleSheet.create({
         height: 30,
         resizeMode: 'contain',
         borderRadius: 10,
-        marginRight:20
+        marginRight: 20
     },
     number: {
         flex: 1
@@ -107,4 +128,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default results;
+export default players;

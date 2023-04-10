@@ -2,8 +2,7 @@ import {ActivityIndicator, FlatList, Image, StyleSheet, Text, View} from "react-
 import useFetch from "../Parser/parser";
 
 const topScore = () => {
-    const {scData, isLoading,error} = useFetch('GET-SCORETABLE');
-    const scoreTable = scData;
+    const {data, isLoading,error} = useFetch('GET-SCORETABLE');
 
     return (
         <View>
@@ -15,7 +14,7 @@ const topScore = () => {
                 <Text style={styles.tableScore__ga}>г+а</Text>
             </View>
             {isLoading?(<ActivityIndicator/>):error?(<Text> Something went wrong</Text>):(
-                <FlatList style={{height: '100%'}} data={scoreTable} renderItem={({item}) =>
+                <FlatList style={{height: '100%'}} data={data} renderItem={({item}) =>
                     <View style={styles.tableScore__Item}>
                         <Text style={styles.tableScore__position}>{item.position}</Text>
                         <View style={styles.tableScore__player}>
@@ -26,7 +25,6 @@ const topScore = () => {
                                            source={{
                                                uri: item.logo
                                            }}/>
-
                                 </View>
                                 <Text style={styles.tableScore__playerTeamTitle}>{item.team}</Text>
                             </View>
